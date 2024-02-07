@@ -98,8 +98,11 @@ class ConverterUI(tk.Tk):
         #TODO 2. When that works, intelligently decide to convert
         #        left-to-right or right-to-left
 
+        self.r_combo.field['fg'] = 'black'
+        self.l_combo.field['fg'] = 'black'
+
         if not self.l_combo.field_val.get() and not self.r_combo.field_val.get():
-            messagebox.showerror(title="Value Error", message="Field can't be blank")
+            return
 
         if self.l_combo.field_val.get():
             try:
@@ -109,8 +112,8 @@ class ConverterUI(tk.Tk):
                     self.r_combo.combo_val.get().replace(" ", "_")
                 )
             except ValueError:
-                messagebox.showerror(title="Value Error", message="Must fill only number in the field")
-                self.l_combo.field.delete(0, tk.END)
+                self.l_combo.field['fg'] = 'red'
+                self.r_combo.field.delete(0, tk.END)
                 return
 
             self.r_combo.field.delete(0, tk.END)
@@ -125,8 +128,8 @@ class ConverterUI(tk.Tk):
                     self.l_combo.combo_val.get().replace(" ", "_")
                 )
             except ValueError:
-                messagebox.showerror(title="Value Error", message="Must fill only number in the field")
-                self.r_combo.field.delete(0, tk.END)
+                self.r_combo.field['fg'] = 'red'
+                self.l_combo.field.delete(0, tk.END)
                 return
 
             self.l_combo.field.delete(0, tk.END)
@@ -136,6 +139,8 @@ class ConverterUI(tk.Tk):
     def clear_handler(self, *args):
         self.l_combo.field.delete(0, tk.END)
         self.r_combo.field.delete(0, tk.END)
+        self.r_combo.field['fg'] = 'black'
+        self.l_combo.field['fg'] = 'black'
         return
 
     def change_unit(self, *args):
