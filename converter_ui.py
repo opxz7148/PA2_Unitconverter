@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
-from unittype import UnitType
-from converter import UnitConverter, LengthConverter
+from unittype import UnitType, LengthUnits
+
 
 class ConverterUI(tk.Tk):
     """User Interface for a unit converter.
@@ -11,15 +11,14 @@ class ConverterUI(tk.Tk):
     a UnitConverter object to perform actual unit conversions.
     """
 
-    def __init__(self, converter: UnitConverter):
+    def __init__(self, unit_type):
         super().__init__()
 
-        # Set initialize converter.
-        self.converter = converter
+        # Setting up menubar
+        menubar = tk.Menu(self)
+        self.config(menu=menubar)
 
-        # # Setting up menubar
-        # menubar = tk.Menu(self)
-        # self.config()
+        self.unit = tk.StringVar()
 
         # Create all component for GUI
         self.l_combo = FieldCombo(self)
@@ -27,6 +26,30 @@ class ConverterUI(tk.Tk):
         self.label = tk.Label(self, text=" = ")
         self.convert_button = tk.Button(self, text="convert", command=self.convert_handler)
         self.clear_button = tk.Button(self, text="clear", command=self.clear_handler)
+
+
+        # Setting up unit menu
+        unit_list = tk.Menu(menubar)
+
+        # Load all unit
+        for unit in UnitType:
+            unit_list.add_radiobutton(
+                label=unit.value[0],
+                value=unit.value[0],
+                variable=self.unit,
+                command=self.change_unit
+            )
+
+        unit_list.add_radiobutton(label="Exit", command=self.destroy)
+
+        menubar.add_cascade(
+            label="unit",
+            menu=unit_list,
+        )
+        self.use_unit = unit_type
+        self.load_units()
+
+
 
         # Call init_component to set thing up
         self.init_components()
@@ -53,15 +76,19 @@ class ConverterUI(tk.Tk):
         self.l_combo.field.bind('<Return>', self.convert_handler)
         self.r_combo.field.bind('<Return>', self.convert_handler)
 
-
     def load_units(self):
         """Load units of the requested unittype into the comboboxes."""
-        units = self.converter.get_units()
+        units = self.use_unit.get_units()
+
         #TODO put the unit names (strings) in the comboboxes
         #TODO and select which unit to display
 
         self.l_combo.combobox['values'] = units
         self.r_combo.combobox['values'] = units
+
+        self.l_combo.combobox.current(newindex=0)
+        self.r_combo.combobox.current(newindex=0)
+
 
     def convert_handler(self, *args):
         """An event handler for conversion actions.
@@ -76,10 +103,10 @@ class ConverterUI(tk.Tk):
 
         if self.l_combo.field_val.get():
             try:
-                result = self.converter.convert(
+                result = self.use_unit.convert(
                     float(self.l_combo.field_val.get()),
-                    self.l_combo.combo_val.get(),
-                    self.r_combo.combo_val.get()
+                    self.l_combo.combo_val.get().replace(" ", "_"),
+                    self.r_combo.combo_val.get().replace(" ", "_")
                 )
             except ValueError:
                 messagebox.showerror(title="Value Error", message="Must fill only number in the field")
@@ -92,10 +119,10 @@ class ConverterUI(tk.Tk):
 
         else:
             try:
-                result = self.converter.convert(
+                result = self.use_unit.convert(
                     float(self.r_combo.field_val.get()),
-                    self.r_combo.combo_val.get(),
-                    self.l_combo.combo_val.get()
+                    self.r_combo.combo_val.get().replace(" ", "_"),
+                    self.l_combo.combo_val.get().replace(" ", "_")
                 )
             except ValueError:
                 messagebox.showerror(title="Value Error", message="Must fill only number in the field")
@@ -110,6 +137,12 @@ class ConverterUI(tk.Tk):
         self.l_combo.field.delete(0, tk.END)
         self.r_combo.field.delete(0, tk.END)
         return
+
+    def change_unit(self, *args):
+        print(self.unit.get())
+        self.use_unit = UnitType[self.unit.get().upper()]
+        self.load_units()
+        self.clear_handler()
 
     def run(self):
         # start the app, wait for events 
@@ -128,7 +161,6 @@ class FieldCombo:
         self.combobox = ttk.Combobox(root, textvariable=self.combo_val)
         self.combobox['state'] = 'readonly'
 
-
     def set_to_the_left(self):
         self.field.pack(side=tk.LEFT, expand=True, fill="x")
         self.combobox.pack(side=tk.LEFT, expand=True, fill="x")
@@ -136,8 +168,8 @@ class FieldCombo:
         self.combobox.set(self.combo_val.get())
 
 
-
 if __name__ == "__main__":
-    ui = ConverterUI(LengthConverter())
-    ui.run()
+   ui = ConverterUI(UnitType["LENGTH"])
+   ui.run()
+
 
