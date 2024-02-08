@@ -14,3 +14,6 @@ A Unit Converter using Python Tkinter graphics.
 
 Your code for Lab 5 Length Converter should be marked with an *annotated tag* named "**lab5**".
 
+## UML diagram
+![uml class diagram](./Screenshot%202567-02-09%20at%2000.24.18.png)
+

@@ -89,7 +89,6 @@ class ConverterUI(tk.Tk):
         self.l_combo.combobox.current(newindex=0)
         self.r_combo.combobox.current(newindex=0)
 
-
     def convert_handler(self, *args):
         """An event handler for conversion actions.
         You should call the unit converter to perform actual conversion.
