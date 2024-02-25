@@ -1,6 +1,5 @@
 """An enumeration of known types of units."""
 from enum import Enum
-from converter import UnitConverter
 
 
 class LengthUnits(Enum):
@@ -51,13 +50,3 @@ class UnitType(Enum):
     def __str__(self):
         """Return the unittype name suitable for printing."""
         return self.value[0]
-
-    def get_units(self):
-        return [unit.name.replace("_", " ") for unit in self.value[1]]
-
-    def convert(self, val, from_u, to_u):
-        return UnitConverter.convert(
-            val,
-            self.value[1][from_u],
-            self.value[1][to_u]
-        )

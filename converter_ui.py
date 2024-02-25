@@ -1,7 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox
 from tkinter import ttk
-from unittype import UnitType, LengthUnits
 
 
 class ConverterUI(tk.Tk):
@@ -11,8 +9,10 @@ class ConverterUI(tk.Tk):
     a UnitConverter object to perform actual unit conversions.
     """
 
-    def __init__(self, unit_type: UnitType):
+    def __init__(self, converter:'UnitConverter'):
         super().__init__()
+
+        self.converter = converter
 
         # Setting up menubar
         menubar = tk.Menu(self)
@@ -30,8 +30,10 @@ class ConverterUI(tk.Tk):
         # Setting up unit menu
         unit_list = tk.Menu(menubar)
 
-        # Load all unit
-        for unit in UnitType:
+        # Load all unittype
+        unittype = self.converter.get_unit_type()
+
+        for unit in unittype:
             unit_list.add_radiobutton(
                 label=unit.value[0],
                 value=unit.value[0],
@@ -45,10 +47,7 @@ class ConverterUI(tk.Tk):
             label="unit",
             menu=unit_list,
         )
-        self.use_unit = unit_type
-        self.load_units()
-
-
+        self.use_unit = unittype[0]
 
         # Call init_component to set thing up
         self.init_components()
@@ -78,7 +77,7 @@ class ConverterUI(tk.Tk):
     def load_units(self):
         """Load units of the requested unittype into the comboboxes."""
         print(type(self.use_unit))
-        units = self.use_unit.get_units()
+        units = self.converter.get_units(self.use_unit)
 
         self.l_combo.combobox['values'] = units
         self.r_combo.combobox['values'] = units
@@ -99,7 +98,8 @@ class ConverterUI(tk.Tk):
 
         if self.l_combo.field_val.get():
             try:
-                result = self.use_unit.convert(
+                result = self.converter.convert(
+                    self.use_unit,
                     float(self.l_combo.field_val.get()),
                     self.l_combo.combo_val.get().replace(" ", "_"),
                     self.r_combo.combo_val.get().replace(" ", "_")
@@ -115,7 +115,8 @@ class ConverterUI(tk.Tk):
 
         else:
             try:
-                result = self.use_unit.convert(
+                result = self.converter.convert(
+                    self.use_unit,
                     float(self.r_combo.field_val.get()),
                     self.r_combo.combo_val.get().replace(" ", "_"),
                     self.l_combo.combo_val.get().replace(" ", "_")
@@ -138,13 +139,12 @@ class ConverterUI(tk.Tk):
 
     def change_unit(self, *args):
         print(self.unit.get())
-        self.use_unit = UnitType[self.unit.get().upper()]
+        self.use_unit = self.converter.get_unit_type(self.unit.get().upper())
         self.load_units()
         self.clear_handler()
 
     def run(self):
         # start the app, wait for events 
-        #TODO
         self.mainloop()
 
 
@@ -164,8 +164,3 @@ class FieldCombo:
         self.combobox.pack(side=tk.LEFT, expand=True, fill="x")
         self.combobox.current(newindex=0)
         self.combobox.set(self.combo_val.get())
-
-
-if __name__ == "__main__":
-    ui = ConverterUI(UnitType["LENGTH"])
-    ui.run()
