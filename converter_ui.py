@@ -11,7 +11,7 @@ class ConverterUI(tk.Tk):
     a UnitConverter object to perform actual unit conversions.
     """
 
-    def __init__(self, unit_type):
+    def __init__(self, unit_type: UnitType):
         super().__init__()
 
         # Setting up menubar
@@ -26,7 +26,6 @@ class ConverterUI(tk.Tk):
         self.label = tk.Label(self, text=" = ")
         self.convert_button = tk.Button(self, text="convert", command=self.convert_handler)
         self.clear_button = tk.Button(self, text="clear", command=self.clear_handler)
-
 
         # Setting up unit menu
         unit_list = tk.Menu(menubar)
@@ -78,10 +77,8 @@ class ConverterUI(tk.Tk):
 
     def load_units(self):
         """Load units of the requested unittype into the comboboxes."""
+        print(type(self.use_unit))
         units = self.use_unit.get_units()
-
-        #TODO put the unit names (strings) in the comboboxes
-        #TODO and select which unit to display
 
         self.l_combo.combobox['values'] = units
         self.r_combo.combobox['values'] = units
@@ -93,9 +90,6 @@ class ConverterUI(tk.Tk):
         """An event handler for conversion actions.
         You should call the unit converter to perform actual conversion.
         """
-        #TODO 1. Convert from left side to right side
-        #TODO 2. When that works, intelligently decide to convert
-        #        left-to-right or right-to-left
 
         self.r_combo.field['fg'] = 'black'
         self.l_combo.field['fg'] = 'black'
@@ -173,7 +167,5 @@ class FieldCombo:
 
 
 if __name__ == "__main__":
-   ui = ConverterUI(UnitType["LENGTH"])
-   ui.run()
-
-
+    ui = ConverterUI(UnitType["LENGTH"])
+    ui.run()
